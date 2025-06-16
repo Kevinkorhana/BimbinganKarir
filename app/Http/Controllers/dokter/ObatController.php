@@ -16,13 +16,8 @@ class ObatController extends Controller
         ]);
     }
 
-    public function create()
-    {
-        $obat = Obat::all();
-        
-        return view('dokter.obat.create')->with([
-            'obat' => $obat,
-        ]);
+    public function create(){
+        return view('dokter.obat.create');
     }
 
     public function edit($id)

@@ -1,60 +1,72 @@
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 leading-tight">
-            {{ __('Tambah Jadwal Periksa') }}
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            {{ __('Jadwal Periksa') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Form Jadwal Periksa</h3>
+        <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
+            <div class="p-4 bg-white shadow-sm sm:p-8 sm:rounded-lg">
+                <div class="max-w-xl">
+                    <section>
+                        <header>
+                            <h2 class="text-lg font-medium text-gray-900">
+                                {{ __('Tambah Jadwal Periksa') }}
+                            </h2>
 
-                @if (session('error'))
-                    <div class="mb-4 text-red-600 text-sm">
-                        {{ session('error') }}
-                    </div>
-                @endif
+                            <p class="mt-1 text-sm text-gray-600">
+                                {{ __('Silakan isi form di bawah ini untuk menambahkan jadwal pemeriksaan dokter sesuai dengan hari dan waktu yang tersedia.') }}
+                            </p>
+                        </header>
 
-                <form action="{{ route('dokter.jadwal-periksa.store') }}" method="POST" class="space-y-6">
-                    @csrf
+                        <form class="mt-6" action="{{ route('dokter.jadwal-periksa.store') }}" method="POST">
+                            @csrf
+                            <div class="mb-3 form-group">
+                                <label for="hariSelect">Hari</label>
+                                <select class="form-control" name="hari" id="hariSelect">
+                                    <option value="">Pilih Hari</option>
+                                    <option value="Senin">Senin</option>
+                                    <option value="Selasa">Selasa</option>
+                                    <option value="Rabu">Rabu</option>
+                                    <option value="Kamis">Kamis</option>
+                                    <option value="Jumat">Jumat</option>
+                                    <option value="Sabtu">Sabtu</option>
+                                    <option value="Minggu">Minggu</option>
+                                </select>
+                            </div>
 
-                    <div>
-                        <label for="hari" class="block text-sm font-medium text-gray-700">Hari</label>
-                        <select name="hari" id="hari" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <option value="">-- Pilih Hari --</option>
-                            @foreach (['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'] as $day)
-                                <option value="{{ $day }}">{{ $day }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                            <div class="mb-3 form-group">
+                                <label for="jam_mulai">Jam Mulai</label>
+                                <input type="time" class="form-control" id="jamMulai" name="jam_mulai" required>
+                            </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="jam_mulai" class="block text-sm font-medium text-gray-700">Jam Mulai</label>
-                            <input type="time" name="jam_mulai" id="jam_mulai" required
-                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        </div>
+                            <div class="mb-4 form-group">
+                                <label for="jam_selesai">Jam Selesai</label>
+                                <input type="time" class="form-control" id="jamSelesai" name="jam_selesai" required>
+                            </div>
 
-                        <div>
-                            <label for="jam_selesai" class="block text-sm font-medium text-gray-700">Jam Selesai</label>
-                            <input type="time" name="jam_selesai" id="jam_selesai" required
-                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end gap-3">
-                        <a href="{{ route('dokter.jadwal-periksa.index') }}"
-                           class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
-                            Batal
-                        </a>
-                        <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
-                            Simpan
-                        </button>
-                    </div>
-                </form>
+                            <a type="button" href="{{ route('dokter.jadwal-periksa.index') }}" class="btn btn-secondary">
+                                Batal
+                            </a>
+                                <button type="submit" class="btn btn-primary">
+                                    Simpan
+                                </button>
+                        </form>
+                    </section>
+                </div>
             </div>
         </div>
     </div>

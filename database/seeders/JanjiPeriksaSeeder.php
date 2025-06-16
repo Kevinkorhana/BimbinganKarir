@@ -20,7 +20,7 @@ class JanjiPeriksaSeeder extends Seeder
 
         JanjiPeriksa::create([
             'id_pasien' => $pasien->id,
-            'id_jadwal' => $jadwal->id,
+            'id_jadwal_periksa' => $jadwal->id,
             'keluhan' => 'Sakit kepala dan demam',
             'no_antrian' => 1,
         ]);

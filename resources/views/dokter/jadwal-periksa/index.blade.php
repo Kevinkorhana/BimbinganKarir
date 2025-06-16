@@ -1,72 +1,89 @@
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 leading-tight">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">
             {{ __('Jadwal Periksa') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="bg-white shadow-md rounded-lg p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Daftar Jadwal Periksa</h3>
-                    <a href="{{ route('dokter.jadwal-periksa.create') }}"
-                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">
-                        Tambah Jadwal
-                    </a>
-                </div>
+        <div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
+            <div class="p-4 bg-white shadow-sm sm:p-8 sm:rounded-lg" <section>
+                <header class="flex items-center justify-between">
+                    <h2 class="text-lg font-medium text-gray-900">
+                        {{ __('Daftar Jadwal Periksa') }}
+                    </h2>
 
-                @if (session('success'))
-                    <div class="mb-4 text-green-600 text-sm">
-                        {{ session('success') }}
+                    <div class="flex-col items-center justify-center text-center">
+                        <a href="{{route('dokter.jadwal-periksa.create')}}" class="btn btn-primary">Tambah Jadwal Periksa</a>
+
+                        @if (session('status') === 'obat-created')
+                            <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
+                                class="text-sm text-gray-600">{{ __('Created.') }}</p>
+                        @endif
+                        @if (session('status') === 'obat-exists')
+                            <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
+                                class="text-sm text-gray-600">{{ __('Exists.') }}</p>
+                        @endif
                     </div>
-                @endif
+                </header>
 
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
+                <table class="table mt-6 overflow-hidden rounded table-hover">
+                    <thead class="thead-light">
                         <tr>
-                            <th class="px-6 py-3">No</th>
-                            <th class="px-6 py-3">Hari</th>
-                            <th class="px-6 py-3">Jam Mulai</th>
-                            <th class="px-6 py-3">Jam Selesai</th>
-                            <th class="px-6 py-3">Status</th>
-                            <th class="px-6 py-3">Aksi</th>
+                            <th scope="col">No</th>
+                            <th scope="col">Hari</th>
+                            <th scope="col">Mulai</th>
+                            <th scope="col">Selesai</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse ($jadwalPeriksas as $index => $jadwal)
+                    <tbody>
+                        @foreach ($jadwalPeriksas as $jadwalPeriksa)
                             <tr>
-                                <td class="px-6 py-4">{{ $index + 1 }}</td>
-                                <td class="px-6 py-4">{{ $jadwal->hari }}</td>
-                                <td class="px-6 py-4">{{ $jadwal->jam_mulai }}</td>
-                                <td class="px-6 py-4">{{ $jadwal->jam_selesai }}</td>
-                                <td class="px-6 py-4">
-                                    @if ($jadwal->status == 1)
-                                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded">Aktif</span>
+                                <th scope="row" class="align-middle text-start">{{ $loop->iteration }}</th>
+                                <td class="align-middle text-start">{{ $jadwalPeriksa->hari }}</td>
+                                <td class="align-middle text-start">{{ \Carbon\Carbon::parse($jadwalPeriksa->jam_mulai)->format('H.i') }}</td>
+                                <td class="align-middle text-start">{{ \Carbon\Carbon::parse($jadwalPeriksa->jam_selesai)->format('H.i') }}</td>
+                                <td class="align-middle text-start">
+                                    @if ($jadwalPeriksa->status)
+                                        <span class="badge badge-pi11 badge-success">Akif</span>
                                     @else
-                                        <span class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">Nonaktif</span>
+                                        <span class="badge badge-pi11 badge-danger">Nonakif</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4">
-                                    <form action="{{ route('dokter.jadwal-periksa.toggle-status', $jadwal->id) }}" method="POST">
+                                <td class="align-middle text-start">
+                                    <form action="{{route('dokter.jadwal-periksa.update', $jadwalPeriksa->id)}}" method="POST">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit"
-                                            class="px-3 py-1 rounded text-xs font-medium text-white
-                                                {{ $jadwal->status == 1 ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }}">
-                                            {{ $jadwal->status == 1 ? 'Nonaktifkan' : 'Aktifkan' }}
-                                        </button>
+                                        @if ($jadwalPeriksa->status)
+                                            <button type="submit" class="btn btn-danger btn-sm">Nonaktifkan</button>
+                                        @else
+                                            <button type="submit" class="btn btn-success btn-sm">Aktifkan</button>
+                                        @endif
+                                    </form>
+                                    <form action="{{ route('dokter.jadwal-periksa.destroy', $jadwalPeriksa->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm mt-1">Hapus</button>
                                     </form>
                                 </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">Belum ada jadwal periksa.</td>
-                            </tr>
-                        @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
 </x-app-layout>

@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 
-
 class DokterSeeder extends Seeder
 {
     /**
